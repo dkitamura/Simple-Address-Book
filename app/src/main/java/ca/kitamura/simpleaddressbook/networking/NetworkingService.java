@@ -8,7 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Darren on 2016-12-13.
  */
 
+//Retrofit creation is costly, make it static and do it once...
 public final class NetworkingService {
+
+    private NetworkingService(){
+    }
 
     static RandomUserApi randomUserApi;
     private static String BASE_URL = "https://randomuser.me/api/";

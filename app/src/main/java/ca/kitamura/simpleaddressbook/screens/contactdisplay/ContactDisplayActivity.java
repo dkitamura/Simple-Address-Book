@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,7 +41,7 @@ public class ContactDisplayActivity extends AppCompatActivity {
         cardViewNumber = (CardView)findViewById(R.id.activity_contact_phone_cardview);
         cardViewLocation = (CardView)findViewById(R.id.activity_contact_location_cardview);
 
-        //Check if there is data
+        //Check if there is data or else go back
         if(getIntent().getExtras() != null) {
             final Result contactData = (Result) getIntent().getExtras().getSerializable("contactData");
 
@@ -53,6 +54,7 @@ public class ContactDisplayActivity extends AppCompatActivity {
             contactNumber.setText(contactData.getPhone());
             contactLocation.setText(String.format("%s, %s, %s",contactData.getLocation().getStreet(), contactData.getLocation().getCity(), contactData.getLocation().getCity()));
 
+            //Dialer Trigger
             cardViewNumber.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -62,6 +64,7 @@ public class ContactDisplayActivity extends AppCompatActivity {
                 }
             });
 
+            //Google Maps
             cardViewLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,5 +79,14 @@ public class ContactDisplayActivity extends AppCompatActivity {
             //No data go back
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+                super.onBackPressed();
+                return true;
+        }
+        return false;
     }
 }
