@@ -2,6 +2,8 @@ package ca.kitamura.simpleaddressbook.screens.main;
 
 import android.util.Log;
 
+import java.io.IOException;
+
 import ca.kitamura.simpleaddressbook.models.randomuser.RandomUserResponse;
 import ca.kitamura.simpleaddressbook.networking.NetworkingService;
 import retrofit2.Call;
@@ -33,6 +35,9 @@ public class MainPresenterImpl implements MainPresenter {
             @Override
             public void onFailure(Call<RandomUserResponse> call, Throwable t) {
                 mainView.hideProgressBar();
+                if(t instanceof IOException) {
+                    mainView.showNetworkError();
+                }
                 Log.e("Call Fail", t.getMessage());
             }
         });
