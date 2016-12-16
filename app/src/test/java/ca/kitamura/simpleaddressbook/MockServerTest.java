@@ -3,8 +3,10 @@ package ca.kitamura.simpleaddressbook;
 import org.junit.Test;
 import org.mockito.internal.util.io.IOUtil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 
 import ca.kitamura.simpleaddressbook.models.randomuser.RandomUserError;
@@ -31,23 +33,26 @@ public class MockServerTest {
     @Test
     public void validResponse() throws Exception {
         MockWebServer mockWebServer = new MockWebServer();
+
         InputStream jsonStream = ClassLoader.getSystemResourceAsStream("validrandomuser.json");
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(IOUtil.readLines(jsonStream).toString()));
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(jsonStream, "UTF-8"));
+        StringBuilder responseStringBuilder = new StringBuilder();
+        String inputString;
+
+        while((inputString = streamReader.readLine()) != null) {
+            responseStringBuilder.append(inputString);
+        }
+
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(responseStringBuilder.toString()));
         RandomUserApi userApi = new Retrofit.Builder().baseUrl(mockWebServer.url("").toString()).addConverterFactory(GsonConverterFactory.create()).build().create(RandomUserApi.class);
 
         Call<RandomUserResponse> randomUserResponseCall = userApi.getRandomUsers();
-        randomUserResponseCall.enqueue(new Callback<RandomUserResponse>() {
-            @Override
-            public void onResponse(Call<RandomUserResponse> call, Response<RandomUserResponse> response) {
-                assertTrue(response.code() == 201);
-                assertTrue(response.body() != null);
-            }
+        Response<RandomUserResponse> response = randomUserResponseCall.execute();
 
-            @Override
-            public void onFailure(Call<RandomUserResponse> call, Throwable t) {
+        assertTrue(response.code() == 200);
+        assertTrue(response.body() != null);
 
-            }
-        });
         mockWebServer.shutdown();
     }
 
